@@ -4,6 +4,19 @@
   <img src="https://1.bp.blogspot.com/-qd0HM80Uemw/Xb7xUbp3p9I/AAAAAAAADPc/OgbBEBR-tl0qjMias90hrsqStVR4G9wNwCLcBGAsYHQ/s1600/Fail2Ban.png" alt="Fail2Ban Logo">
 </p>
 
+## Daftar isi
+
+- [Fail2Ban](#fail2ban)
+  - [Daftar isi](#daftar-isi)
+  - [Deskripsi](#deskripsi)
+  - [Instalasi Fail2Ban](#instalasi-fail2ban)
+    - [Ubuntu atau Debian](#ubuntu-atau-debian)
+    - [CentOS atau RHEL](#centos-atau-rhel)
+  - [Konfigurasi Fail2Ban](#konfigurasi-fail2ban)
+    - [Whitelist IP](#whitelist-ip)
+
+## Deskripsi
+
 Fail2Ban adalah sebuah perangkat lunak keamanan open-source yang dirancang untuk melindungi server dari serangan brute force dan jenis serangan lainnya yang dapat mengancam keamanan sistem. Fail2Ban bekerja dengan memantau log sistem untuk mendeteksi upaya login yang gagal atau aktivitas yang mencurigakan lainnya, seperti percobaan untuk mengakses port yang tidak sah.
 
 Ketika aktivitas mencurigakan terdeteksi, Fail2Ban akan mengambil tindakan yang didefinisikan dalam konfigurasinya, seperti memblokir akses IP yang mencurigakan selama jangka waktu tertentu. Tindakan ini dapat membantu mencegah serangan brute force dan melindungi server dari akses yang tidak sah.
