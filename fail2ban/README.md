@@ -14,6 +14,9 @@
     - [CentOS atau RHEL](#centos-atau-rhel)
   - [Konfigurasi Fail2Ban](#konfigurasi-fail2ban)
     - [Whitelist IP](#whitelist-ip)
+    - [Proteksi Layanan Zimbra](#proteksi-layanan-zimbra)
+      - [Zimbra Submission/SMTP](#zimbra-submissionsmtp)
+      - [Zimbra Web](#zimbra-web)
 
 ## Deskripsi
 
@@ -59,6 +62,12 @@ sudo yum install fail2ban
 
 ## Konfigurasi Fail2Ban
 
+Pada konfigurasi awal, jalankan perintah berikut untuk membuat salinan file konfigurasi default Fail2Ban :
+
+```sh
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
+
 ### Whitelist IP
 
 1. Jalankan perintah berikut untuk memulai konfigurasi whitelist IP :
@@ -81,7 +90,7 @@ ignoreip = 127.0.0.1/8 ::1 192.168.0.0/24 192.168.2.100/32
 
 4. Setelah dimasukkan, simpan konfigurasi tersebut dengan menekan kombinasi `CTRL` + `O` lalu tekan `Enter`
 5. Kemudian keluar dari editor dengan menekan `CTRL` + `X`
-6. Restart layanan **fail2ban** dengan mengetik :
+6. Restart layanan **fail2ban** dengan perintah berikut :
 
 - Ubuntu atau Debian:
 
@@ -92,5 +101,116 @@ sudo service fail2ban restart
 - CentOS atau RHEL:
 
 ```sh
-systemctl restart fail2ban
+sudo systemctl restart fail2ban
+```
+
+### Proteksi Layanan Zimbra
+
+#### Zimbra Submission/SMTP
+
+1. Buat filter baru untuk proteksi Zimbra Submission/SMTP dengan menjalankan perintah berikut :
+
+```sh
+sudo nano /etc/fail2ban/filter.d/zimbra-smtp.conf
+```
+
+2. Isikan konfigurasi berikut pada file tersebut :
+
+```conf
+[Definition]
+failregex = postfix\/submission\/smtpd\[\d+\]: warning: .*\[<HOST>\]: SASL \w+ authentication failed: authentication failure$
+            postfix\/smtps\/smtpd\[\d+\]: warning: .*\[<HOST>\]: SASL \w+ authentication failed: authentication failure$
+
+ignoreregex =
+```
+
+3. Buat konfigurasi baru untuk proteksi Zimbra Submission/SMTP dengan menjalankan perintah berikut :
+
+```sh
+sudo nano /etc/fail2ban/jail.d/zimbra-smtp.conf
+```
+
+4. Isikan konfigurasi berikut pada file tersebut :
+
+```conf
+[zimbra-smtp]
+enabled = true
+port = smtp,ssmtp,submission,465,587
+filter = zimbra-smtp
+logpath = /var/log/zimbra.log
+maxretry = 3
+banaction = route
+findtime = 86400
+bantime = 86400
+action = route
+```
+
+5. Setelah dimasukkan, simpan konfigurasi tersebut dengan menekan kombinasi `CTRL` + `O` lalu tekan `Enter`
+6. Kemudian keluar dari editor dengan menekan `CTRL` + `X`
+7. Restart layanan **fail2ban** dengan perintah berikut :
+
+- Ubuntu atau Debian:
+
+```sh
+sudo service fail2ban restart
+```
+
+- CentOS atau RHEL:
+
+```sh
+sudo systemctl restart fail2ban
+```
+
+#### Zimbra Web
+
+1. Buat filter baru untuk proteksi Zimbra Web dengan menjalankan perintah berikut :
+
+```sh
+sudo nano /etc/fail2ban/filter.d/zimbra-web.conf
+```
+
+2. Isikan konfigurasi berikut pada file tersebut :
+
+```conf
+[Definition]
+failregex = .*ip=<HOST>;.*authentication failed for .*$
+
+ignoreregex =
+```
+
+3. Buat konfigurasi baru untuk proteksi Zimbra Web dengan menjalankan perintah berikut :
+
+```sh
+sudo nano /etc/fail2ban/jail.d/zimbra-web.conf
+```
+
+4. Isikan konfigurasi berikut pada file tersebut :
+
+```conf
+[zimbra-web]
+enabled = true
+port = 80,443,7071,9071
+filter = zimbra-web
+logpath = /opt/zimbra/log/mailbox.log
+maxretry = 5
+banaction = route
+findtime = 86400
+bantime = 86400
+action = route
+```
+
+5. Setelah dimasukkan, simpan konfigurasi tersebut dengan menekan kombinasi `CTRL` + `O` lalu tekan `Enter`
+6. Kemudian keluar dari editor dengan menekan `CTRL` + `X`
+7. Restart layanan **fail2ban** dengan perintah berikut :
+
+- Ubuntu atau Debian:
+
+```sh
+sudo service fail2ban restart
+```
+
+- CentOS atau RHEL:
+
+```sh
+sudo systemctl restart fail2ban
 ```
